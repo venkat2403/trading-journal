@@ -1,0 +1,86 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Pullback Trading Journal</title><style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#131722;--mut:#6b7280;--line:#e5e7eb;--pos:#089981;--neg:#e5484d;--mid:#d4a106;
+--up:#089981;--dn:#e5484d;--ema:#2962ff;--vwap:#d633ff;--accent:#5b5bd6;--chip:#eef0f4}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f1115;--card:#171a21;--ink:#e6e8ee;--mut:#9aa1ad;--line:#262a33;--chip:#222632}}
+:root[data-theme=dark]{--bg:#0f1115;--card:#171a21;--ink:#e6e8ee;--mut:#9aa1ad;--line:#262a33;--chip:#222632}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:22px;margin:0}h2{font-size:18px;margin:28px 0 12px}h3{font-size:14px;margin:0 0 10px}h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:14px 0 6px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.muted{color:var(--mut)}
+nav.tabs{display:flex;gap:6px;margin:18px 0 4px;flex-wrap:wrap}nav.tabs button,.daynav button,.daynav select{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;font:inherit;cursor:pointer}
+nav.tabs button[aria-selected=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}.kpi .k{font-size:12px;color:var(--mut)}.kpi .v{font-size:19px;font-weight:650;margin-top:2px}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.flat{color:var(--mut)}
+.chart{width:100%;height:auto;display:block}.grid{stroke:var(--line);stroke-width:1}.axis{fill:var(--mut);font-size:11px}
+.eq{fill:none;stroke-width:2.2}.eq.pos{stroke:var(--pos)}.eq.neg,.eq.flat{stroke:var(--neg)}.area{opacity:.12}.area.pos{fill:var(--pos)}.area.neg,.area.flat{fill:var(--neg)}
+.dot.pos{fill:var(--pos)}.dot.neg{fill:var(--neg)}.dot.flat{fill:var(--mut)}
+.wick{stroke-width:1}.wick.up{stroke:var(--up)}.wick.dn{stroke:var(--dn)}.body.up{fill:var(--up)}.body.dn{fill:var(--dn)}.vol{opacity:.25}.vol.up{fill:var(--up)}.vol.dn{fill:var(--dn)}
+.ema{fill:none;stroke:var(--ema);stroke-width:1.3}.vwap{fill:none;stroke:var(--vwap);stroke-width:1.3}
+.lv-entry{stroke:var(--ema);stroke-dasharray:5 4}.lv-stop{stroke:var(--neg);stroke-dasharray:5 4}.lv-t1{stroke:var(--pos);stroke-dasharray:5 4}
+text.lvl{font-size:11px;stroke:none}text.lv-entry{fill:var(--ema)}text.lv-stop{fill:var(--neg)}text.lv-t1{fill:var(--pos)}
+.mk-buy{fill:var(--ema);stroke:var(--card)}.mk-sell{fill:#f59e0b;stroke:var(--card)}
+.legend{font-size:12px;color:var(--mut);margin-top:4px}.sw{display:inline-block;width:14px;height:3px;margin:0 4px 3px 10px;vertical-align:middle}
+.sw.ema{background:var(--ema)}.sw.vwap{background:var(--vwap)}.sw.lv-entry{border-top:2px dashed var(--ema)}.sw.lv-stop{border-top:2px dashed var(--neg)}.sw.lv-t1{border-top:2px dashed var(--pos)}
+.cal{margin-bottom:14px}.cal-t{font-weight:600;margin:4px 0 8px}.cal-g{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.cal-h{font-size:11px;color:var(--mut);text-align:center}.cal-c{min-height:66px;border:1px solid var(--line);border-radius:8px;background:var(--card);padding:6px 8px;display:flex;flex-direction:column;align-items:flex-start;font:inherit;color:var(--ink);text-align:left}
+.cal-c.empty{visibility:hidden}button.cal-c{cursor:pointer}.cal-c.pos{background:color-mix(in srgb,var(--pos) 14%,var(--card));border-color:color-mix(in srgb,var(--pos) 45%,var(--line))}
+.cal-c.neg{background:color-mix(in srgb,var(--neg) 14%,var(--card));border-color:color-mix(in srgb,var(--neg) 45%,var(--line))}
+.dn{font-size:11px;color:var(--mut)}.dp{font-weight:650}.dr{font-size:11px;color:var(--mut)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}.grid2 .card{margin:0}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl th{text-align:left;color:var(--mut);font-weight:500;border-bottom:1px solid var(--line);padding:6px 6px}.tbl td{padding:6px;border-bottom:1px solid var(--line)}.tbl td+td,.tbl th+th{white-space:nowrap}
+.card:has(>.tbl),.grid2 .card{overflow-x:auto}
+.kv{font-size:13px;border-collapse:collapse;width:100%}.kv td{padding:3px 0}.kv td:first-child{color:var(--mut);width:42%}
+.trade header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.sym{font-size:18px;font-weight:700;margin-right:8px}.chip{display:inline-block;border-radius:6px;padding:2px 8px;font-weight:650;font-size:12px;margin-right:8px;background:var(--chip)}
+.chip.gAp{background:#00c853;color:#06240f}.chip.gA{background:#64dd17;color:#132a00}.chip.gBp{background:#ffd600;color:#2b2400}.chip.gB{background:#ff9100;color:#2b1600}
+.res{display:flex;gap:14px;font-size:18px;font-weight:700}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.sb{display:grid;grid-template-columns:70px 1fr 44px;align-items:center;gap:8px;font-size:12px;margin:3px 0}.sb .bar{height:7px;background:var(--chip);border-radius:4px;overflow:hidden}
+.sb i{display:block;height:100%}.sb i.pos{background:var(--pos)}.sb i.mid{background:var(--mid)}.sb i.neg{background:var(--neg)}.sb b{text-align:right;font-weight:600}
+.notes{margin:0;padding-left:18px;font-size:13px}textarea{width:100%;min-height:70px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);padding:8px;font:inherit}
+.daynav{display:flex;gap:8px;align-items:center;margin-top:18px;flex-wrap:wrap}
+@media (max-width:600px){.res{font-size:16px}.cal-c{min-height:54px;padding:4px}.dr{display:none}}
+</style></head><body><main>
+<div class="top"><div><h1>Trading Journal</h1><div class="muted">Momentum pullback · VWAP + 9 EMA · updated Sep 27, 2026 21:17
+</div></div></div>
+<nav class="tabs"><button data-go="day">Daily journal</button><button data-go="overview">Overview</button><button data-go="reports">Reports</button></nav>
+
+<div data-view="day">
+  <div class="daynav"><button id="prev" aria-label="Previous day">‹</button><select id="daysel" aria-label="Session"></select><button id="next" aria-label="Next day">›</button></div>
+  <div class="card muted">No sessions logged yet. Run the bot, then this page fills in.</div>
+</div>
+
+<div data-view="overview" hidden>
+  <h2>All sessions</h2><div class="kpis"><div class="kpi"><div class="k">Net P&L</div><div class="v flat">$0.00</div></div><div class="kpi"><div class="k">Net R</div><div class="v flat">0.00R</div></div><div class="kpi"><div class="k">Win rate</div><div class="v ">0%</div></div><div class="kpi"><div class="k">Profit factor</div><div class="v ">0.00</div></div><div class="kpi"><div class="k">Expectancy / trade</div><div class="v flat">0.00R</div></div><div class="kpi"><div class="k">Avg win</div><div class="v flat">0.00R</div></div><div class="kpi"><div class="k">Avg loss</div><div class="v flat">0.00R</div></div><div class="kpi"><div class="k">Trades</div><div class="v ">0</div></div><div class="kpi"><div class="k">Max drawdown</div><div class="v ">0.00R</div></div></div>
+  <div class="card"><h3>Cumulative R</h3><p class="muted">No trades yet.</p></div>
+  <div class="card"><h3>P&amp;L calendar</h3><p class="muted">No trades yet.</p></div>
+</div>
+
+<div data-view="reports" hidden>
+  <h2>What is working</h2>
+  <div class="grid2">
+    <div class="card"><h3>By grade</h3><table class="tbl"><thead><tr><th></th><th>Trades</th><th>Win%</th><th>Avg</th><th>Total R</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div>
+    <div class="card"><h3>By exit</h3><table class="tbl"><thead><tr><th></th><th>Trades</th><th>Win%</th><th>Avg</th><th>Total R</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div>
+    <div class="card"><h3>By entry time (ET)</h3><table class="tbl"><thead><tr><th></th><th>Trades</th><th>Win%</th><th>Avg</th><th>Total R</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div>
+    <div class="card"><h3>By pullback number</h3><table class="tbl"><thead><tr><th></th><th>Trades</th><th>Win%</th><th>Avg</th><th>Total R</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div>
+    <div class="card"><h3>By symbol</h3><table class="tbl"><thead><tr><th></th><th>Trades</th><th>Win%</th><th>Avg</th><th>Total R</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div>
+    <div class="card"><h3>By room to next level</h3><table class="tbl"><thead><tr><th></th><th>Trades</th><th>Win%</th><th>Avg</th><th>Total R</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+</main><script>
+const views=document.querySelectorAll('[data-view]'),tabs=document.querySelectorAll('nav.tabs button');
+function show(v){views.forEach(x=>x.hidden=x.dataset.view!==v);tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.go===v))}
+tabs.forEach(t=>t.onclick=()=>show(t.dataset.go));
+const days=[...document.querySelectorAll('section.day')].map(s=>s.dataset.day),sel=document.getElementById('daysel');
+function openDay(d){document.querySelectorAll('section.day').forEach(s=>s.hidden=s.dataset.day!==d);sel.value=d;show('day')}
+document.getElementById('prev').onclick=()=>{const i=days.indexOf(sel.value);if(i>0)openDay(days[i-1])};
+document.getElementById('next').onclick=()=>{const i=days.indexOf(sel.value);if(i<days.length-1)openDay(days[i+1])};
+sel.onchange=()=>openDay(sel.value);
+document.querySelectorAll('button.cal-c').forEach(b=>b.onclick=()=>openDay(b.dataset.day));
+document.querySelectorAll('textarea[data-note]').forEach(t=>{const k='note:'+t.dataset.note;
+ try{t.value=localStorage.getItem(k)||''}catch(e){}t.oninput=()=>{try{localStorage.setItem(k,t.value)}catch(e){}}});
+if(days.length)openDay(days[days.length-1]);show('day');
+</script></body></html>
